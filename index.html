@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html ng-app="listaTelefonica" lang="en">
 <head>
-  <link rel="stylesheet" href="lib/bootstrap/bootstrap.css">
+  <link rel="stylesheet" href="lib/bootstrap/bootstrap.min.css">
   <style>
     .jumbotron{
       width: 400px;
@@ -41,12 +41,23 @@
         <td>{{ contato.operadora.nome }}</td>
       </tr>
       </hr>
-      <input class="form-control" type="text" ng-model="contato.nome" placeholder="Nome"/>
-      <input class="form-control" type="text" ng-model="contato.telefone" placeholder="Telefone"/>
-      <select class="form-control"  ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
-        <option value="">Selecione uma operadora</option>
-      </select>
-      <button class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="!contato.nome || !contato.telefone || !contato.operadora">Adicionar contato</button>
+      <form name="contatoForm">
+        <input class="form-control" type="text" ng-model="contato.nome" name="nome" placeholder="Nome" ng-required="true"/>
+        <input class="form-control" type="text" ng-model="contato.telefone" name="telefone" placeholder="Telefone" ng-required="true"/>
+        <select class="form-control"  ng-model="contato.operadora" ng-options="operadora.nome group by operadora.categoria for operadora in operadoras">
+          <option value="">Selecione uma operadora</option>
+        </select>
+      </form>
+     
+      <div ng-show="!contatoForm.nome.$valid" class="alert alert-danger">
+        Por favor, preencha o nome!
+      </div>
+
+      <div ng-show="!contatoForm.telefone.$valid" class="alert alert-danger">
+        Por favor, preencha o telefone!
+      </div>
+
+      <button class="btn btn-primary btn-block" ng-click="adicionarContato(contato)" ng-disabled="contatoForm.nome.$invalid">Adicionar contato</button>
       <button class="btn btn-danger btn-block" ng-click="apagarContatos(contatos)">Apagar Contatos</button>
     </table>
   </div>
@@ -73,6 +84,7 @@
       $scope.adicionarContato = function(contato){
         $scope.contatos.push(angular.copy(contato));
         delete $scope.contato;
+        $scope.contatoForm.$setPristine();
       };
       
       $scope.apagarContatos = function (contatos){
